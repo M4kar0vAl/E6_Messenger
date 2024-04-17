@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Registration
+{% endblock title %}
+
+{% block content %}
+<h2 class="text-center">Registration</h2>
+<form method="post" class="w-50 mx-auto mt-3">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="row g-3">
+    {% for f in form %}
+        <label class="col-sm-3 col-form-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
+        <div class="col-sm-8">
+            {{ f }}
+        </div>
+        {% if f.errors %}
+        <div class="text-danger border border-danger fw-bold bg-light col-sm-11">
+            {% for error in f.errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+    <button class="btn btn-primary d-flex mx-auto my-3" type="submit">Registration</button>
+</form>
+{% endblock content %}

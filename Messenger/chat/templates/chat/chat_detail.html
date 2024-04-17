@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block title %}
+{{ chat.name }}
+{% endblock title %}
+
+{% block content %}
+<h2 class="text-center">{{ chat.name }}</h2>
+<div class="w-50 mx-auto bg-light" style="height: 60vh;">
+<div class="rounded overflow-auto h-100" id="messages-container">
+</div>
+<div class="h-auto">
+    <form action="" method="post" class="row justify-content-center" id="message-form">
+        {% csrf_token %}
+        <input type="hidden" name="chat_pk" value="{{ chat.pk }}">
+        <div class="col-sm-6">
+            <input type="text" class="form-control bg-secondary" name="message_text">
+        </div>
+        <button class="col-sm-2 btn btn-primary" type="submit">Send</button>
+    </form>
+</div>
+</div>
+<script>
+    let chatPk = '{{ chat.pk }}'
+</script>
+<script src="{% static 'chat/js/websockets.js' %}"></script>
+{% endblock content %}

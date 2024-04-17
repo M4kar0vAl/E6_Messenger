@@ -1,0 +1,23 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Users
+{% endblock title %}
+
+{% block content %}
+<div class="my-3">
+{% for user in users %}
+<div class="d-flex w-25 mx-auto mb-3" style="height: 75px;">
+    {% if user.avatar %}
+    <img src="{{ user.avatar.url }}" alt="user's avatar" class="h-100 rounded" style="width: 75px">
+    {% else %}
+    <img src="/media/avatars/default/default.jpg" alt="default avatar" class="h-100 rounded" style="width: 75px">
+    {% endif %}
+    <div class="align-self-center ms-3 d-flex w-100 justify-content-between">
+        <span>{{ user.username }}</span>
+        <a class="link-primary text-decoration-none" href="{% url 'add_personal_chat' %}?to={{ user.pk }}">Send a message</a>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% endblock content %}
