@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
 
 {% load static %}
+{% load tz %}
 
 {% block title %}
 {{ chat.name }}
@@ -10,20 +11,26 @@
 <h2 class="text-center">{{ chat.name }}</h2>
 <div class="w-50 mx-auto bg-light" style="height: 60vh;">
 <div class="rounded overflow-auto h-100" id="messages-container">
+    {% for message in chat.message_set.all %}
+        <div class="w-75 d-flex flex-row ms-auto justify-content-end mt-1 mb-2 me-1" style="min-height: 50px;">
+            <div class="d-flex flex-column justify-content-end" style="max-width: 80%;">
+                <p class="mb-0 border rounded bg-secondary text-break">{{ message.text }}</p>
+                <p class="mb-0 align-self-end">{{ message.created|localtime|date:'d-m-Y' }} {{ message.created|localtime|time:'G:i' }}</p>
+            </div>
+            <div class="d-flex flex-column flex-end align-items-center" style="width: 20%">
+                <img class="rounded-circle" src="{% if message.user.avatar %}{{ message.user.avatar.url }}{% else %}/media/avatars/default/default.jpg{% endif %}" alt="user's avatar" style="width: 50px; height: 50px;">
+                <p class="mb-0 text-break" style="font-size: smaller;">{{ message.user.username }}</p>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 <div class="h-auto">
-    <form action="" method="post" class="row justify-content-center" id="message-form">
-        {% csrf_token %}
-        <input type="hidden" name="chat_pk" value="{{ chat.pk }}">
-        <div class="col-sm-6">
-            <input type="text" class="form-control bg-secondary" name="message_text">
-        </div>
-        <button class="col-sm-2 btn btn-primary" type="submit">Send</button>
-    </form>
+    <input type="text" class="form-control bg-secondary" id="message_text">
+    <input class="col-sm-2 btn btn-primary" id="message_send" type="button" value="Send">
 </div>
 </div>
 <script>
     let chatPk = '{{ chat.pk }}'
 </script>
-<script src="{% static 'chat/js/websockets.js' %}"></script>
+<script src="{% static 'chat/js/websocket_channels.js' %}"></script>
 {% endblock content %}

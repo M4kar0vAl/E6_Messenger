@@ -11,7 +11,7 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from .forms import CreateChatForm
 from .models import Chat, Message, User
 from .permissions import IsOwnerOrReadOnly
-from .serializers import ChatSerializer, UserSerializer, MessageSerializer
+from .serializers import ChatSerializer, UserSerializer
 
 
 class ChatList(LoginRequiredMixin, ListView):
@@ -23,7 +23,7 @@ class ChatList(LoginRequiredMixin, ListView):
         if self.request.path == reverse_lazy('chats'):
             return Chat.objects.filter(type=Chat.GROUP)
         elif self.request.path == reverse_lazy('user_chats'):
-            return Chat.objects.filter(participants__has_key=self.request.user.pk)
+            return Chat.objects.filter(participants__has_key=str(self.request.user.pk))
 
 
 class ChatDetail(UserPassesTestMixin, LoginRequiredMixin, DetailView):
@@ -34,17 +34,9 @@ class ChatDetail(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     def test_func(self):
         if self.request.user == self.get_object().creator:
             return True
-        elif self.request.user.pk in self.get_object().participants:
+        elif str(self.request.user.pk) in self.get_object().participants:
             return True
         return False
-
-    def post(self, request, *args, **kwargs):
-        chat_pk = request.POST.get('chat_pk')
-        chat = Chat.objects.get(pk=chat_pk)
-        message_text = request.POST.get('message_text')
-        user = request.user
-        message_obj = Message.objects.create(text=message_text, user=user, chat=chat)
-        return redirect('chat_detail', pk=chat_pk)
 
 
 class CreateChat(LoginRequiredMixin, CreateView):
@@ -113,6 +105,9 @@ def manage_participants(request):
         elif action == 'delete':
             chat.delete()
             return redirect('chats')
+        elif action == 'user_chats_delete':
+            chat.delete()
+            return redirect('user_chats')
 
 
 class ChatGroupViewSet(ModelViewSet):
@@ -147,33 +142,11 @@ class UserViewSet(mixins.RetrieveModelMixin,
     serializer_class = UserSerializer
 
     def get_permissions(self):
-        if self.request.user.is_staff:
-            self.permission_classes = [IsAuthenticated]
-            return [permission() for permission in self.permission_classes]
-        elif self.action in ('list',):
+        if self.action in ('list',):
             self.permission_classes = [IsAuthenticated]
         elif self.action in ('retrieve', 'update', 'partial_update'):
             self.permission_classes = [IsOwnerOrReadOnly]
         return [permission() for permission in self.permission_classes]
 
 
-class MessageViewSet(mixins.CreateModelMixin,
-                     mixins.RetrieveModelMixin,
-                     mixins.ListModelMixin,
-                     GenericViewSet):
-    serializer_class = MessageSerializer
-    queryset = Message.objects.all()
 
-    def get_permissions(self):
-        if self.action in ('create', 'list', 'retrieve'):
-            self.permission_classes = [IsAuthenticated]
-        return [permission() for permission in self.permission_classes]
-
-    def perform_create(self, serializer):
-        user = self.request.user
-        chat_pk = self.request.POST.get('chat_pk')
-        kwargs = {
-            'user': user,
-            'chat': chat_pk,
-        }
-        serializer.save(**kwargs)

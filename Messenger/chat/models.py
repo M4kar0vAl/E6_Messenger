@@ -32,5 +32,5 @@ class Chat(models.Model):
         self.save()
 
     def remove_participant(self, user):
-        self.participants.pop(user.pk)
+        self.participants.pop(str(user.pk))
         self.save()

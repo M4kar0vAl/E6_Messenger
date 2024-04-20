@@ -20,12 +20,11 @@ from django.urls import path, include
 from rest_framework import routers
 
 from Messenger import settings
-from chat.views import ChatGroupViewSet, UserViewSet, MessageViewSet
+from chat.views import ChatGroupViewSet, UserViewSet
 
 router = routers.DefaultRouter()
 router.register('chats', ChatGroupViewSet, basename='group_chats')
 router.register('users', UserViewSet, basename='users')
-router.register('messages', MessageViewSet, basename='messages')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

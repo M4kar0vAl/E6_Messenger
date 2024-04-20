@@ -17,7 +17,12 @@ Chats
         <button class="btn btn-primary" name="action" value="join">Join</button>
       {% else %}
         {% if request.user == chat.creator %}
-          <button class="btn btn-danger" name="action" value="delete">Delete</button>
+          {% url 'user_chats' as user_chats %}
+          {% if request.path == user_chats %}
+            <button class="btn btn-danger" name="action" value="user_chats_delete">Delete</button>
+          {% else %}
+            <button class="btn btn-danger" name="action" value="delete">Delete</button>
+          {% endif %}
         {% else %}
           <button class="btn btn-warning" name="action" value="leave">Leave</button>
         {% endif %}

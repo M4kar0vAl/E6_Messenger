@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from .models import Chat, Message
+from .models import Chat
 
 
 class ChatSerializer(ModelSerializer):
@@ -23,14 +23,3 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'avatar']
-
-
-class MessageSerializer(ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    chat = serializers.PrimaryKeyRelatedField(read_only=True)
-    created = serializers.DateTimeField(read_only=True)
-
-    class Meta:
-        model = Message
-        fields = ['id', 'text', 'user', 'chat', 'created']

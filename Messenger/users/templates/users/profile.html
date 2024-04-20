@@ -7,9 +7,11 @@ Profile
 {% block content %}
 <h2 class="text-center">Your profile</h2>
 <div class="text-center">
-    {% if user.avatar %}
     <p class="fs-5 fw-semibold">Avatar:</p>
-    <img src="{{ user.avatar.url }}" alt="user's avatar" width="300px" height="400px">
+    {% if user.avatar %}
+        <img class="rounded-circle" src="{{ user.avatar.url }}" alt="user's avatar" width="300px" height="300px">
+    {% else %}
+        <img class="rounded-circle" src="/media/avatars/default/default.jpg" alt="user's default avatar" width="300px" height="300px">
     {% endif %}
     <p class="fs-5 mt-2"><span class="fw-semibold me-3">Username:</span>{{ user.username }}</p>
 </div>
